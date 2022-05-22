@@ -1,3 +1,4 @@
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const express = require('express')
 const app = express()
 const cors = require('cors');
@@ -9,3 +10,10 @@ require('dotenv').config();
 //middle ware 
 app.use(cors());
 app.use(express.json());
+
+
+
+
+const uri = "mongodb+srv://manufacturing-website:<password>@cluster0.otvqo.mongodb.net/?retryWrites=true&w=majority";
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
