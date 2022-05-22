@@ -52,7 +52,12 @@ async function run() {
             res.send(newOrder);
         })
 
-
+        /* post method for adding new tool */
+        app.post('/tools', async(req, res) =>{
+            const newTool = req.body;
+            const result = await toolsCollection.insertOne(newTool);
+            res.send(result);
+        })
     }
     finally {
 
