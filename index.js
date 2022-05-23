@@ -3,7 +3,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors');
 const port = process.env.PORT || 5000;
-// const path = require('path')
+const path = require('path')
 require('dotenv').config();
 
 
@@ -24,6 +24,7 @@ async function run() {
         // console.log('database connected');
         const toolsCollection = client.db('manufacturing-website').collection('tools');
         const ordersCollection = client.db('manufacturing-website').collection('orderDetails');
+        const reviewCollection = client.db('manufacturing-website').collection('review');
 
 
 
@@ -48,8 +49,18 @@ async function run() {
         /* post method for orders details */
         app.post('/orderDetails', async(req, res) =>{
             const orders= req.body;
+            console.log(orders);
             const newOrder = await ordersCollection.insertOne(orders);
+            console.log(newOrder);
             res.send(newOrder);
+        })
+
+        /* Get order details for dashboard  */
+        app.get('/orderDetails', async(req, res) =>{
+            const query = {};
+            const cursor = ordersCollection.find(query)
+            const allOrder = await cursor.toArray();
+            res.send(allOrder);
         })
 
         /* post method for adding new tool */
@@ -58,6 +69,36 @@ async function run() {
             const result = await toolsCollection.insertOne(newTool);
             res.send(result);
         })
+
+
+        // deleting data for dashboard my orders page 
+        app.delete('/orderDetails/:id', async(req, res) =>{
+            const id = req.params.id;
+            // console.log(id);
+            const query = {_id: ObjectId(id)};
+            // console.log(query);
+            const deleteProduct = await ordersCollection.deleteOne(query);
+            // console.log(deleteProduct);
+            res.send(deleteProduct);
+        })
+
+
+        /* post method for add review in database */
+        app.post('/review', async(req, res) =>{
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
+            res.send(result);
+        })
+
+        /* Get method for review showing ui */
+        app.get('/review', async (req, res) => {
+            const query = {};
+            const cursor = reviewCollection.find(query)
+            const review = await cursor.toArray();
+            res.send(review);
+
+        })
+    
     }
     finally {
 
