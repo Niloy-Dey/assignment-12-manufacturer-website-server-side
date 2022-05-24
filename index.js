@@ -136,8 +136,17 @@ async function run() {
           const result = await userCollection.updateOne(filter, updateDoc);
           res.send( result );
         }
-    //   }
       )
+
+
+/* get method for admin call */
+      app.get('/admin/:email', async(req, res) =>{
+        const email = req.params.email;
+        const user = await userCollection.findOne({email: email});
+        const isAdmin = user.role  === 'admin';
+        res.send({admin: isAdmin});
+      })
+  
     }
     finally {
 
