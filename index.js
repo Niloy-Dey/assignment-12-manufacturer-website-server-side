@@ -146,6 +146,17 @@ async function run() {
         const isAdmin = user.role  === 'admin';
         res.send({admin: isAdmin});
       })
+
+
+
+       // Deleting manage product  data 
+    app.delete('/tools/:id', async(req, res) =>{
+        const id = req.params.id;
+        const query = {_id: ObjectId(id)};
+        const manageData = await toolsCollection.deleteOne(query);
+        res.send(manageData);
+    });
+
   
     }
     finally {
