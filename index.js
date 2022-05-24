@@ -25,6 +25,7 @@ async function run() {
         const toolsCollection = client.db('manufacturing-website').collection('tools');
         const ordersCollection = client.db('manufacturing-website').collection('orderDetails');
         const reviewCollection = client.db('manufacturing-website').collection('review');
+        const userCollection = client.db('manufacturing-website').collection('users');
 
 
 
@@ -99,6 +100,47 @@ async function run() {
 
         })
     
+
+
+         /* user information put process (update data) */
+    app.put('/user/:email', async (req, res) => {
+        const email = req.params.email;
+        const user = req.body;
+        const filter = { email: email };
+        const options = { upsert: true };
+        const updateDoc = { $set: user };
+        const result = await userCollection.updateOne(filter, updateDoc, options);
+        res.send(result);
+      })
+
+
+      /* Get method for all user data load and  showing ui */
+      app.get('/users', async (req, res) => {
+        const query = {};
+        const cursor = userCollection.find(query)
+        const users = await cursor.toArray();
+        res.send(users);
+
+    })
+
+
+
+    /* Make a admin from user  */
+    app.put('/user/admin/:email', async (req, res) => {
+        const email = req.params.email;
+        const requester = req.decoded.email;
+        const requesterAccount = await userCollection.findOne({ email: requester });
+        if (requesterAccount.role === 'admin') {
+          const filter = { email: email };
+          const updateDoc = { $set: { role: 'admin' }, };
+          const result = await userCollection.updateOne(filter, updateDoc);
+          res.send({ result });
+        }
+        else {
+          res.status(403).send({ message: 'forbidden' })
+        }
+  
+      })
     }
     finally {
 
